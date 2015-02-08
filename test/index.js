@@ -6,7 +6,7 @@ describe('models', function() {
   it('should work', function() {
     var User = model('user');
     
-    User.path('username', {type: 'string'});
+    User.attr('username', {type: 'string'});
     
     var doc = new User();
     expect(doc.get('username')).to.equal('');
@@ -24,24 +24,29 @@ describe('inheritance', function() {
   it('should work', function() {
     var User = model('user');
     
-    User.path('username', 'string');
+    User.attr('username', 'string');
     
-    var Teacher = model('teacher')
-      .extend(User)
-      .path('class', 'string');
+    var Teacher = User.extend('teacher')
+      .attr('class', 'string');
     
+    // Should inherit
     var doc = new Teacher();
     expect(doc.get('username')).to.equal('');
     expect(doc.get('class')).to.to.equal('');
+    
+    // Should not pollute the parent
+    doc = new User();
+    expect(doc.get('username')).to.equal('');
+    expect(doc.get('class')).to.equal(undefined);
   });
 });
 
 describe('nesting', function() {
   it('should validate nested objects', function(done) {   
     var User = model('user')
-      .path('name', model()
-        .path('familyName', {type: 'string', required: true})
-        .path('givenName', 'string'));
+      .attr('name', model()
+        .attr('familyName', {type: 'string', required: true})
+        .attr('givenName', 'string'));
     
     var doc = new User();
     expect(doc.get('name.familyName')).to.equal('');
@@ -57,8 +62,8 @@ describe('nesting', function() {
     var User = model('user');
     var Name = model('name');
     
-    Name.path('givenName', {type: 'string'});
-    User.path('name', Name);
+    Name.attr('givenName', {type: 'string'});
+    User.attr('name', Name);
     
     var doc = new User();
     expect(doc.get('name.givenName')).to.equal('');

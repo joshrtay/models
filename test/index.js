@@ -27,7 +27,7 @@ describe('inheritance', function() {
     User.path('username', 'string');
     
     var Teacher = model('teacher')
-      .inherit(User)
+      .extend(User)
       .path('class', 'string');
     
     var doc = new Teacher();

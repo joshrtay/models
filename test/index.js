@@ -58,6 +58,51 @@ describe('nesting', function() {
     });
   });
   
+  it('should set nested properties', function() {
+    var User = model('user')
+      .attr('name', model('name')
+        .attr('familyName', 'string'));
+      
+    var doc = new User();
+    doc.set('name.familyName', 'test');
+    expect(doc.get('name.familyName')).to.equal('test');
+  });
+  
+  it('should allow validators to be set on objects', function(done) {
+    var Name = model('name')
+      .attr('familyName', 'string')
+      .attr('givenName', 'string');
+      
+    var User = model('user')
+      .attr('name', Name);
+    
+    // Define a validator that expresses
+    // a relation between two properties
+    // on the root of this model
+    Name.addValidator(function(value) {
+      return !! (value.get('givenName') || value.get('familyName'));
+    });
+    
+    var doc = new User();
+    doc.validate(function(err) {
+      expect(err).not.to.be.null;
+      doc.set('name.givenName', 'test');
+      doc.validate(function(err) {
+        expect(err).to.be.null;
+        doc.set('name.familyName', 'test');
+        doc.set('name.givenName', null);
+        doc.validate(function(err) {
+          expect(err).to.be.null;
+          doc.set('name.familyName', 'test');
+          doc.validate(function(err) {
+            expect(err).to.be.null;
+            done();
+          });
+        });
+      });
+    });
+  });
+  
   it('should work with nested models', function() {
     var User = model('user');
     var Name = model('name');

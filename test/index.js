@@ -3,11 +3,14 @@ var expect = chai.expect;
 var model = require('../');
 
 describe('models', function() {
-  it('should work', function() {
+  it.only('should work', function() {
     var User = model('user')
       .attr('username', {type: 'string'});
 
+    console.log('user', typeof User.attrs.username.defaultValue);
     var doc = new User();
+    doc.get('username');
+    console.log('fdsa', doc.doc.username);
     expect(doc.get('username')).to.equal('');
     
     doc.set('username', 'test');

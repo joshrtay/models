@@ -6,7 +6,7 @@ require('debug-trace')({always: true});
 
 describe('models', function() {
   it('should work', function() {
-    var User = model('user')
+    var User = model
       .attr('username', {type: 'string'});
 
     var doc = new User();
@@ -24,7 +24,7 @@ describe('models', function() {
 
 describe('inheritance', function() {
   it('should work', function() {
-    var User = model('user')
+    var User = model
       .attr('username', 'string');
        
     var Teacher = User
@@ -44,8 +44,8 @@ describe('inheritance', function() {
 
 describe('nesting', function() {
   it('should validate nested objects', function(done) {
-    var User = model('user')
-      .attr('name', model()
+    var User = model
+      .attr('name', model
         .attr('familyName', {type: 'string', required: true})
         .attr('givenName', 'string'));
     
@@ -60,8 +60,8 @@ describe('nesting', function() {
   });
   
   it('should set nested properties', function() {
-    var User = model('user')
-      .attr('name', model('name')
+    var User = model
+      .attr('name', model
         .attr('familyName', 'string'));
       
     var doc = new User();
@@ -73,19 +73,21 @@ describe('nesting', function() {
     // Define a validator that expresses
     // a relation between two properties
     // on the root of this model
-    var Name = model('name')
+    var Name = model
       .attr('familyName', 'string')
       .attr('givenName', 'string')
       .validator(function(value) {
         return !! (value.get('givenName') || value.get('familyName'));
-      });
+      }, 'both');
 
-    var User = model('user')
+    var User = model
       .attr('name', Name);
       
     var doc = new User();
     doc.validate(function(err) {
       expect(err).not.to.be.null;
+      expect(err[0].key).to.equal('both');
+      
       doc.set('name.givenName', 'test');
       doc.validate(function(err) {
         expect(err).to.be.null;
@@ -104,10 +106,10 @@ describe('nesting', function() {
   });
   
   it('should work with nested models', function() {
-    var Name = model('name')
+    var Name = model
       .attr('givenName', {type: 'string'});
       
-    var User = model('user')
+    var User = model
       .attr('name', Name);
        
     var doc = new User();

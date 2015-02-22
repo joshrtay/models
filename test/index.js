@@ -4,10 +4,9 @@ var model = require('../');
 
 describe('models', function() {
   it('should work', function() {
-    var User = model('user');
-    
-    User.attr('username', {type: 'string'});
-    
+    var User = model('user')
+      .attr('username', {type: 'string'});
+
     var doc = new User();
     expect(doc.get('username')).to.equal('');
     
@@ -22,11 +21,10 @@ describe('models', function() {
 
 describe('inheritance', function() {
   it('should work', function() {
-    var User = model('user');
-    
-    User.attr('username', 'string');
-    
-    var Teacher = User.extend('teacher')
+    var User = model('user')
+      .attr('username', 'string');
+       
+    var Teacher = User
       .attr('class', 'string');
     
     // Should inherit
@@ -42,7 +40,7 @@ describe('inheritance', function() {
 });
 
 describe('nesting', function() {
-  it('should validate nested objects', function(done) {   
+  it('should validate nested objects', function(done) {
     var User = model('user')
       .attr('name', model()
         .attr('familyName', {type: 'string', required: true})
@@ -51,7 +49,7 @@ describe('nesting', function() {
     var doc = new User();
     expect(doc.get('name.familyName')).to.equal('');
     expect(doc.get('name.givenName')).to.equal('');
-    
+
     doc.validate(function(err) {
       expect(err).not.to.be.null;
       done();
@@ -69,20 +67,19 @@ describe('nesting', function() {
   });
   
   it('should allow validators to be set on objects', function(done) {
-    var Name = model('name')
-      .attr('familyName', 'string')
-      .attr('givenName', 'string');
-      
-    var User = model('user')
-      .attr('name', Name);
-    
     // Define a validator that expresses
     // a relation between two properties
     // on the root of this model
-    Name.addValidator(function(value) {
-      return !! (value.get('givenName') || value.get('familyName'));
-    });
-    
+    var Name = model('name')
+      .attr('familyName', 'string')
+      .attr('givenName', 'string')
+      .validator(function(value) {
+        return !! (value.get('givenName') || value.get('familyName'));
+      });
+      
+    var User = model('user')
+      .attr('name', Name);
+       
     var doc = new User();
     doc.validate(function(err) {
       expect(err).not.to.be.null;
@@ -104,12 +101,12 @@ describe('nesting', function() {
   });
   
   it('should work with nested models', function() {
-    var User = model('user');
-    var Name = model('name');
-    
-    Name.attr('givenName', {type: 'string'});
-    User.attr('name', Name);
-    
+    var Name = model('name')
+      .attr('givenName', {type: 'string'});
+      
+    var User = model('user')
+      .attr('name', Name);
+       
     var doc = new User();
     expect(doc.get('name.givenName')).to.equal('');
   });

@@ -2,15 +2,15 @@ var chai = require('chai');
 var expect = chai.expect;
 var model = require('../');
 
+require('debug-trace')({always: true});
+
 describe('models', function() {
-  it.only('should work', function() {
+  it('should work', function() {
     var User = model('user')
       .attr('username', {type: 'string'});
 
-    console.log('user', typeof User.attrs.username.defaultValue);
     var doc = new User();
     doc.get('username');
-    console.log('fdsa', doc.doc.username);
     expect(doc.get('username')).to.equal('');
     
     doc.set('username', 'test');
@@ -79,10 +79,10 @@ describe('nesting', function() {
       .validator(function(value) {
         return !! (value.get('givenName') || value.get('familyName'));
       });
-      
+
     var User = model('user')
       .attr('name', Name);
-       
+      
     var doc = new User();
     doc.validate(function(err) {
       expect(err).not.to.be.null;

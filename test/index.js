@@ -164,4 +164,44 @@ describe('discriminators', function() {
     expect(doc.get('subject')).to.equal(undefined);
     expect(doc.get('grade')).to.equal(0);
   });
-})
+  
+  it.only('should work on nested documents', function() {
+    var Share = model
+      .attr('object', 'object');
+    
+    var Obj = model
+      .attr('content', 'string')
+      .type('object', {
+        discriminator: {
+          key: 'objectType',
+          types: ['question', 'video']
+        }
+      });
+    
+    var Question = model
+      .attr('answer', 'string')
+      .type('question');
+    
+    var Video = model
+      .attr('url', 'string')
+      .type('video');
+      
+    var doc = new Share({object: {}});
+    
+    expect(doc.get('object.content')).to.equal('');
+    expect(doc.get('object.answer')).to.equal(undefined);
+    expect(doc.get('object.url')).to.equal(undefined);
+    
+    doc = new Share({object: {objectType: 'question'}});
+    
+    expect(doc.get('object.content')).to.equal('');
+    expect(doc.get('object.answer')).to.equal('');
+    expect(doc.get('object.url')).to.equal(undefined);
+    
+    doc = new Share({object: {objectType: 'video'}});
+    
+    expect(doc.get('object.content')).to.equal('');
+    expect(doc.get('object.answer')).to.equal(undefined);
+    expect(doc.get('object.url')).to.equal(''); 
+  });
+});

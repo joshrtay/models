@@ -116,3 +116,52 @@ describe('nesting', function() {
     expect(doc.get('name.givenName')).to.equal('');
   });
 });
+
+describe('default values', function() {
+  it('should work', function() {
+    var User = model
+      .attr('grade', {type: 'number', default: 3});
+      
+    var doc = new User();
+    expect(doc.get('grade')).to.equal(3);
+    doc.set('grade', 4);
+    expect(doc.get('grade')).to.equal(4);
+  });
+});
+
+describe('discriminators', function() {
+  it('should work', function() {
+    var User = model
+      .attr('username', 'string')
+      .type('user', {
+        discriminator: {
+          key: 'userType',
+          types: ['teacher', 'student']
+        }
+      });
+    
+    var Teacher = User
+      .attr('subject', 'string')
+      .type('teacher');
+      
+    var Student = User
+      .attr('grade', 'number')
+      .type('student');
+    
+    var doc = new User({userType: 'teacher'});
+    
+    expect(doc.get('username')).to.equal('');
+    expect(doc.get('subject')).to.equal('');
+    expect(doc.get('grade')).to.equal(undefined);
+    
+    doc = new User({});
+    expect(doc.get('username')).to.equal('');
+    expect(doc.get('subject')).to.equal(undefined);
+    expect(doc.get('grade')).to.equal(undefined);
+    
+    doc = new User({userType: 'student'});
+    expect(doc.get('username')).to.equal('');
+    expect(doc.get('subject')).to.equal(undefined);
+    expect(doc.get('grade')).to.equal(0);
+  });
+})

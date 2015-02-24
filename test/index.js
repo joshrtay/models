@@ -165,7 +165,7 @@ describe('discriminators', function() {
     expect(doc.get('grade')).to.equal(0);
   });
   
-  it.only('should work on nested documents', function() {
+  it('should work on nested documents', function() {
     var Share = model
       .attr('object', 'object');
     

@@ -1,10 +1,6 @@
-module.exports = require('./lib/model')
-  .use(require('./lib/getter-setter'))
-  .use(require('./lib/cast'))
-  .use(require('./lib/methods'))
-  .use(require('./lib/attrs'))
-  .use(require('./lib/validation'))
-  .use(require('./lib/required'))
-  .use(require('./lib/defaults'));
+module.exports = require('./lib/core')
+  .use(require('./lib/validation'));
 
-require('./lib/types');
+require('./lib/primatives');
+
+

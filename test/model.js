@@ -118,6 +118,4 @@ describe('Model', function() {
 
   });
   
-
-
 });
